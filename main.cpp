@@ -26,31 +26,19 @@ double CalcDiscriminant(double a, double b, double c) {
     return (b * b - 4 * a * c);
 }
 
-long double bisection(Polynom equation, long double *leftBorder, long double *rightBorder) {
+long double bisection(Polynom equation, Polynom derivative, long double *leftBorder, long double *rightBorder) {
     long double c;
-    if (*rightBorder >= 0 && *leftBorder >= 0) {
-        c = (*rightBorder - *leftBorder) / 2;
-    } else {
-        c = (*leftBorder + *rightBorder) / 2;
-    }
+    c = (*leftBorder + *rightBorder) / 2;
     long double solution = equation.calculate(c);
-    while(abs(solution) > E) {
-        if (solution < -E) {
+    while(abs(solution) >= E) {
+        if ((solution < -E && derivative.calculate(c) > 0) || (solution > E && derivative.calculate(c) < 0)) {
             *leftBorder = c;
-            if (*rightBorder >= 0 && *leftBorder >= 0) {
-                c = (*rightBorder - *leftBorder) / 2;
-            } else {
-                c = (*leftBorder + *rightBorder) / 2;
-            }
+            c = (*leftBorder + *rightBorder) / 2;
         } else {
             *rightBorder = c;
-            if (*rightBorder >= 0 && *leftBorder >= 0) {
-                c = (*rightBorder - *leftBorder) / 2;
-            } else {
-                c = (*leftBorder + *rightBorder) / 2;
-            }
+            c = (*leftBorder + *rightBorder) / 2;
         }
-        solution = abs(equation.calculate(c));
+        solution = equation.calculate(c);
     }
     return c;
 }
@@ -78,10 +66,9 @@ int main() {
     long double leftBorder = INFINITY, rightBorder = INFINITY, root;
     cin >> a >> b >> c >> d;
     Polynom equation = *new Polynom(a, b, c, d);
-    Polynom derivated = *new Polynom(0, 3, 2 * b, c);
+    Polynom derivative = *new Polynom(0, 3, 2 * b, c);
 
-    Discriminant = CalcDiscriminant(derivated.b, derivated.c, derivated.d);
-//    cout << Discriminant << endl;
+    Discriminant = CalcDiscriminant(derivative.b, derivative.c, derivative.d);
 
     if (Discriminant < -E) {
         if (abs(equation.calculate(0)) < E) {
@@ -89,56 +76,59 @@ int main() {
         } else if (equation.calculate(0) > E) {
             rightBorder = 0;
             findLeftBorder(equation, &rightBorder, &leftBorder);
-            root = bisection(equation, &leftBorder, &rightBorder);
+            root = bisection(equation, derivative, &leftBorder, &rightBorder);
             cout << "ROOT: " << root << endl;
         } else {
             leftBorder = 0;
             findRightBorder(equation, &rightBorder, &leftBorder);
-            root = bisection(equation, &leftBorder, &rightBorder);
+            root = bisection(equation, derivative, &leftBorder, &rightBorder);
             cout << "ROOT: " << root << endl;
         }
     } else {
-        alpha = (-derivated.c - sqrt(Discriminant)) / (2 * b);
-        beta = (-derivated.c + sqrt(Discriminant)) / (2 * b);
+        alpha = (-derivative.c - sqrt(Discriminant)) / (2 * derivative.b);
+        beta = (-derivative.c + sqrt(Discriminant)) / (2 * derivative.b);
         if (equation.calculate(alpha) < -E && equation.calculate(beta) < -E) {
-            rightBorder = beta;
+            leftBorder = beta;
             findRightBorder(equation, &rightBorder, &leftBorder);
-            root = bisection(equation, &leftBorder, &rightBorder);
+            root = bisection(equation, derivative, &leftBorder, &rightBorder);
             cout << "ROOT: " << root << endl;
         } else if (equation.calculate(alpha) > E && equation.calculate(beta) > E) {
             rightBorder = alpha;
             findLeftBorder(equation, &rightBorder, &leftBorder);
-            root = bisection(equation, &leftBorder, &rightBorder);
+            root = bisection(equation, derivative, &leftBorder, &rightBorder);
             cout << "ROOT: " << root << endl;
         } else if (equation.calculate(alpha) > E && equation.calculate(beta) < -E) {
             rightBorder = beta;
-            findRightBorder(equation, &rightBorder, &leftBorder);
-            root = bisection(equation, &leftBorder, &rightBorder);
+            findLeftBorder(equation, &rightBorder, &leftBorder);
+            root = bisection(equation, derivative, &leftBorder, &rightBorder);
             cout << "ROOT: " << root << endl;
 
-            rightBorder = beta;
+            leftBorder = beta;
             findRightBorder(equation, &rightBorder, &leftBorder);
-            root = bisection(equation, &leftBorder, &rightBorder);
+            root = bisection(equation, derivative, &leftBorder, &rightBorder);
             cout << "ROOT: " << root << endl;
 
             rightBorder = beta;
             leftBorder = alpha;
-            root = bisection(equation, &leftBorder, &rightBorder);
+            root = bisection(equation, derivative, &leftBorder, &rightBorder);
             cout << "ROOT: " << root << endl;
         } else if (equation.calculate(alpha) > E && abs(equation.calculate(beta)) < E) {
             cout << "ROOT: " << beta << endl;
             rightBorder = alpha;
             findLeftBorder(equation, &rightBorder, &leftBorder);
-            root = bisection(equation, &leftBorder, &rightBorder);
+            root = bisection(equation, derivative, &leftBorder, &rightBorder);
             cout << "ROOT: " << root << endl;
         } else if (abs(equation.calculate(alpha)) < E && equation.calculate(beta) < -E) {
             cout << "ROOT: " << alpha << endl;
             leftBorder = beta;
             findRightBorder(equation, &rightBorder, &leftBorder);
-            root = bisection(equation, &leftBorder, &rightBorder);
+            root = bisection(equation, derivative, &leftBorder, &rightBorder);
             cout << "ROOT: " << root << endl;
         } else {
-            cout << "-" << endl;
+            rightBorder = beta;
+            leftBorder = alpha;
+            root = bisection(equation, derivative, &leftBorder, &rightBorder);
+            cout << "ROOT: " << root << endl;
         }
     }
     return 0;
