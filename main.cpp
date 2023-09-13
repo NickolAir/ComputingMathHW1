@@ -98,7 +98,7 @@ int main() {
             root = bisection(equation, derivative, &leftBorder, &rightBorder);
             cout << "ROOT: " << root << endl;
         } else if (equation.calculate(alpha) > E && equation.calculate(beta) < -E) {
-            rightBorder = beta;
+            rightBorder = alpha;
             findLeftBorder(equation, &rightBorder, &leftBorder);
             root = bisection(equation, derivative, &leftBorder, &rightBorder);
             cout << "ROOT: " << root << endl;
