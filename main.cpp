@@ -61,6 +61,16 @@ void findLeftBorder(Polynom equation, long double *rightBorder, long double *lef
     }
 }
 
+void checkMultiplicity(Polynom equation, long double root, double alpha, double beta) {
+    if (pow(abs(equation.b / 3), 2) == abs(equation.c / 3) && abs((equation.c / 3) * (equation.b) / 3) == abs(equation.d)) {
+        cout << "ROOT: " << root << " MULTIPLICITY: 3" << endl;
+    } else if (root == alpha || root == beta) {
+        cout << "ROOT: " << root << " MULTIPLICITY: 2" << endl;
+    } else {
+        cout << "ROOT: " << root << " MULTIPLICITY: 1" << endl;
+    }
+}
+
 int main() {
     double a, b, c, d, Discriminant, alpha, beta;
     long double leftBorder = INFINITY, rightBorder = INFINITY, root;
@@ -77,12 +87,12 @@ int main() {
             rightBorder = 0;
             findLeftBorder(equation, &rightBorder, &leftBorder);
             root = bisection(equation, derivative, &leftBorder, &rightBorder);
-            cout << "ROOT: " << root << endl;
+            checkMultiplicity(equation, root, alpha, beta);
         } else {
             leftBorder = 0;
             findRightBorder(equation, &rightBorder, &leftBorder);
             root = bisection(equation, derivative, &leftBorder, &rightBorder);
-            cout << "ROOT: " << root << endl;
+            checkMultiplicity(equation, root, alpha, beta);
         }
     } else {
         alpha = (-derivative.c - sqrt(Discriminant)) / (2 * derivative.b);
@@ -91,44 +101,44 @@ int main() {
             leftBorder = beta;
             findRightBorder(equation, &rightBorder, &leftBorder);
             root = bisection(equation, derivative, &leftBorder, &rightBorder);
-            cout << "ROOT: " << root << endl;
+            checkMultiplicity(equation, root, alpha, beta);
         } else if (equation.calculate(alpha) > E && equation.calculate(beta) > E) {
             rightBorder = alpha;
             findLeftBorder(equation, &rightBorder, &leftBorder);
             root = bisection(equation, derivative, &leftBorder, &rightBorder);
-            cout << "ROOT: " << root << endl;
+            checkMultiplicity(equation, root, alpha, beta);
         } else if (equation.calculate(alpha) > E && equation.calculate(beta) < -E) {
             rightBorder = alpha;
             findLeftBorder(equation, &rightBorder, &leftBorder);
             root = bisection(equation, derivative, &leftBorder, &rightBorder);
-            cout << "ROOT: " << root << endl;
+            checkMultiplicity(equation, root, alpha, beta);
 
             leftBorder = beta;
             findRightBorder(equation, &rightBorder, &leftBorder);
             root = bisection(equation, derivative, &leftBorder, &rightBorder);
-            cout << "ROOT: " << root << endl;
+            checkMultiplicity(equation, root, alpha, beta);
 
             rightBorder = beta;
             leftBorder = alpha;
             root = bisection(equation, derivative, &leftBorder, &rightBorder);
-            cout << "ROOT: " << root << endl;
+            checkMultiplicity(equation, root, alpha, beta);
         } else if (equation.calculate(alpha) > E && abs(equation.calculate(beta)) < E) {
-            cout << "ROOT: " << beta << endl;
+            checkMultiplicity(equation, beta, alpha, beta);
             rightBorder = alpha;
             findLeftBorder(equation, &rightBorder, &leftBorder);
             root = bisection(equation, derivative, &leftBorder, &rightBorder);
-            cout << "ROOT: " << root << endl;
+            checkMultiplicity(equation, root, alpha, beta);
         } else if (abs(equation.calculate(alpha)) < E && equation.calculate(beta) < -E) {
-            cout << "ROOT: " << alpha << endl;
+            checkMultiplicity(equation, alpha, alpha, beta);
             leftBorder = beta;
             findRightBorder(equation, &rightBorder, &leftBorder);
             root = bisection(equation, derivative, &leftBorder, &rightBorder);
-            cout << "ROOT: " << root << endl;
+            checkMultiplicity(equation, root, alpha, beta);
         } else {
             rightBorder = beta;
             leftBorder = alpha;
             root = bisection(equation, derivative, &leftBorder, &rightBorder);
-            cout << "ROOT: " << root << endl;
+            checkMultiplicity(equation, root, alpha, beta);
         }
     }
     return 0;
